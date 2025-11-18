@@ -98,32 +98,6 @@ Resultado esperado:
 Ran 26 tests in X.XXXs
 OK
 
-ESTRUCTURA DEL PROYECTO
-
-sistema-reserva-salas-biblioteca/
-├── config/ # Configuración del proyecto
-│ ├── settings.py
-│ ├── urls.py
-│ └── wsgi.py
-├── salas/ # Aplicación principal
-│ ├── migrations/
-│ ├── templates/ # Plantillas HTML
-│ │ ├── admin/ # Templates del panel admin
-│ │ └── salas/ # Templates públicos
-│ ├── admin.py
-│ ├── forms.py
-│ ├── models.py
-│ ├── tests.py
-│ ├── urls.py
-│ └── views.py
-├── .env # Variables de entorno (NO en GitHub)
-├── .gitignore
-├── cargar_datos.py # Script para cargar datos de prueba
-├── generar_secret_key.py # Script para generar SECRET_KEY
-├── manage.py
-├── README.md
-└── requirements.txt
-
 CREDENCIALES DE PRUEBA
 
 Después de ejecutar "python cargar_datos.py":
