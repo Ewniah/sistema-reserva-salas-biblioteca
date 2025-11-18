@@ -1,0 +1,50 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Reservar {{ sala.nombre }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Reservar: {{ sala.nombre }}</h2>
+    <p><strong>Capacidad:</strong> {{ sala.capacidad }} personas</p>
+    <p><strong>Duración de la reserva:</strong> 2 horas automáticamente</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                
+                {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                
+                {% if field.help_text %}
+                    <small style="display: block; color: #666; margin-top: 5px;">
+                        {{ field.help_text }}
+                    </small>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn btn-success">Confirmar Reserva</button>
+            <a href="{% url 'detalle_sala' sala.id %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h4>Importante:</h4>
+    <ul>
+        <li>La reserva tendrá una duración de 2 horas desde el momento actual.</li>
+        <li>Solo puede tener una reserva activa a la vez.</li>
+        <li>El RUT debe ser válido (se valida con módulo 11).</li>
+    </ul>
+</div>
+{% endblock %}

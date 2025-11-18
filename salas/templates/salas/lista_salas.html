@@ -1,0 +1,46 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Salas Disponibles{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ titulo }}</h2>
+    <p>Seleccione una sala para ver más detalles o realizar una reserva.</p>
+</div>
+
+{% if salas %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+        {% for sala in salas %}
+            <div class="card">
+                <h3>{{ sala.nombre }}</h3>
+                <p><strong>Capacidad:</strong> {{ sala.capacidad }} personas</p>
+                
+                {% if sala.descripcion %}
+                    <p><strong>Descripción:</strong> {{ sala.descripcion }}</p>
+                {% endif %}
+                
+                <p>
+                    <strong>Estado:</strong>
+                    {% if sala.disponible %}
+                        <span class="badge badge-success">Disponible</span>
+                    {% else %}
+                        <span class="badge badge-danger">Ocupada</span>
+                    {% endif %}
+                </p>
+                
+                <div style="margin-top: 15px;">
+                    <a href="{% url 'detalle_sala' sala.id %}" class="btn btn-secondary">Ver Detalles</a>
+                    
+                    {% if sala.disponible %}
+                        <a href="{% url 'crear_reserva' sala.id %}" class="btn btn-success">Reservar</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <p>No hay salas disponibles en este momento.</p>
+    </div>
+{% endif %}
+{% endblock %}

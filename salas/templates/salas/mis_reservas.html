@@ -1,0 +1,53 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Mis Reservas{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Consultar Mis Reservas</h2>
+    <p>Ingrese su RUT para ver sus reservas activas.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="rut">RUT (con guión)</label>
+            <input type="text" 
+                   name="rut" 
+                   id="rut" 
+                   class="form-control" 
+                   placeholder="Ej: 12345678-9"
+                   value="{{ rut_buscado|default:'' }}"
+                   required>
+        </div>
+        <button type="submit" class="btn">Buscar Reservas</button>
+    </form>
+</div>
+
+{% if reservas %}
+    <div class="card">
+        <h3>Reservas Activas</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sala</th>
+                    <th>Fecha y Hora Inicio</th>
+                    <th>Fecha y Hora Fin</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas %}
+                    <tr>
+                        <td>{{ reserva.sala.nombre }}</td>
+                        <td>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</td>
+                        <td>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <span class="badge badge-success">Activa</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+{% endblock %}

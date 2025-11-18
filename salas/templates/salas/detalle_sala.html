@@ -1,0 +1,60 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}{{ sala.nombre }} - Detalles{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ sala.nombre }}</h2>
+    
+    <p><strong>Capacidad:</strong> {{ sala.capacidad }} personas</p>
+    
+    {% if sala.descripcion %}
+        <p><strong>Descripción:</strong> {{ sala.descripcion }}</p>
+    {% endif %}
+    
+    <p>
+        <strong>Estado actual:</strong>
+        {% if disponible %}
+            <span class="badge badge-success">Disponible</span>
+        {% else %}
+            <span class="badge badge-danger">Ocupada</span>
+        {% endif %}
+    </p>
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'lista_salas' %}" class="btn btn-secondary">Volver</a>
+        
+        {% if disponible %}
+            <a href="{% url 'crear_reserva' sala.id %}" class="btn btn-success">Reservar esta sala</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if reservas %}
+    <div class="card">
+        <h3>Reservas Activas y Próximas</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Reservante</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas %}
+                    <tr>
+                        <td>{{ reserva.nombre_reservante }}</td>
+                        <td>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</td>
+                        <td>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="card">
+        <p>No hay reservas activas para esta sala.</p>
+    </div>
+{% endif %}
+{% endblock %}
