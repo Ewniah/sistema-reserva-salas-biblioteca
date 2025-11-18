@@ -206,7 +206,13 @@
         <ul>
             <li><a href="{% url 'lista_salas' %}">Salas Disponibles</a></li>
             <li><a href="{% url 'mis_reservas' %}">Mis Reservas</a></li>
-            <li><a href="/admin/">Administración</a></li>
+            {% if user.is_authenticated and user.is_staff %}
+                <li><a href="{% url 'panel_admin' %}">Panel Administración</a></li>
+                <li><a href="{% url 'logout' %}">Cerrar Sesión ({{ user.username }})</a>/<li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
+            {% endif %}
+            <li><a href="/admin/">Administración Django</a></li>
         </ul>
     </nav>
     

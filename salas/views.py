@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
 from .models import Sala, Reserva
 from .forms import ReservaForm
+from django.contrib.auth import authenticate, login, logout
 
 def lista_salas(request):
     """
@@ -96,3 +98,176 @@ def mis_reservas(request):
         'rut_buscado': rut_buscado,
     }
     return render(request, 'salas/mis_reservas.html', context)
+
+# Verificar si el usuario es staff (administrador)
+def es_administrador(user):
+    return user.is_staff
+
+@login_required
+@user_passes_test(es_administrador)
+def panel_admin(request):
+    """
+    Panel de administración personalizado
+    """
+    # Estadísticas generales
+    total_salas = Sala.objects.count()
+    salas_habilitadas = Sala.objects.filter(habilitada=True).count()
+    salas_deshabilitadas = total_salas - salas_habilitadas
+    
+    ahora = timezone.now()
+    total_reservas = Reserva.objects.count()
+    reservas_activas = Reserva.objects.filter(fecha_hora_fin__gte=ahora).count()
+    reservas_finalizadas = total_reservas - reservas_activas
+    
+    # Últimas reservas
+    ultimas_reservas = Reserva.objects.all().order_by('-fecha_creacion')[:10]
+    
+    context = {
+        'total_salas': total_salas,
+        'salas_habilitadas': salas_habilitadas,
+        'salas_deshabilitadas': salas_deshabilitadas,
+        'total_reservas': total_reservas,
+        'reservas_activas': reservas_activas,
+        'reservas_finalizadas': reservas_finalizadas,
+        'ultimas_reservas': ultimas_reservas,
+    }
+    return render(request, 'admin/panel_admin.html', context)
+
+@login_required
+@user_passes_test(es_administrador)
+def admin_salas(request):
+    """
+    Gestión de salas desde el panel personalizado
+    """
+    salas = Sala.objects.all().order_by('nombre')
+    
+    context = {
+        'salas': salas,
+    }
+    return render(request, 'admin/admin_salas.html', context)
+
+@login_required
+@user_passes_test(es_administrador)
+def admin_crear_sala(request):
+    """
+    Crear una nueva sala desde el panel personalizado
+    """
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        capacidad = request.POST.get('capacidad')
+        descripcion = request.POST.get('descripcion', '')
+        habilitada = request.POST.get('habilitada') == 'on'
+        
+        try:
+            Sala.objects.create(
+                nombre=nombre,
+                capacidad=capacidad,
+                descripcion=descripcion,
+                habilitada=habilitada
+            )
+            messages.success(request, f'Sala "{nombre}" creada exitosamente.')
+            return redirect('admin_salas')
+        except Exception as e:
+            messages.error(request, f'Error al crear la sala: {str(e)}')
+    
+    return render(request, 'admin/admin_crear_sala.html')
+
+@login_required
+@user_passes_test(es_administrador)
+def admin_editar_sala(request, sala_id):
+    """
+    Editar una sala existente desde el panel personalizado
+    """
+    sala = get_object_or_404(Sala, id=sala_id)
+    
+    if request.method == 'POST':
+        sala.nombre = request.POST.get('nombre')
+        sala.capacidad = request.POST.get('capacidad')
+        sala.descripcion = request.POST.get('descripcion', '')
+        sala.habilitada = request.POST.get('habilitada') == 'on'
+        
+        try:
+            sala.save()
+            messages.success(request, f'Sala "{sala.nombre}" actualizada exitosamente.')
+            return redirect('admin_salas')
+        except Exception as e:
+            messages.error(request, f'Error al actualizar la sala: {str(e)}')
+    
+    context = {'sala': sala}
+    return render(request, 'admin/admin_editar_sala.html', context)
+
+@login_required
+@user_passes_test(es_administrador)
+def admin_eliminar_sala(request, sala_id):
+    """
+    Eliminar una sala desde el panel personalizado
+    """
+    sala = get_object_or_404(Sala, id=sala_id)
+    
+    if request.method == 'POST':
+        nombre_sala = sala.nombre
+        sala.delete()
+        messages.success(request, f'Sala "{nombre_sala}" eliminada exitosamente.')
+        return redirect('admin_salas')
+    
+    context = {'sala': sala}
+    return render(request, 'admin/admin_eliminar_sala.html', context)
+
+@login_required
+@user_passes_test(es_administrador)
+def admin_reservas(request):
+    """
+    Gestión de reservas desde el panel personalizado
+    """
+    reservas = Reserva.objects.all().order_by('-fecha_creacion')
+    
+    context = {
+        'reservas': reservas,
+    }
+    return render(request, 'admin/admin_reservas.html', context)
+
+@login_required
+@user_passes_test(es_administrador)
+def admin_eliminar_reserva(request, reserva_id):
+    """
+    Eliminar una reserva desde el panel personalizado
+    """
+    reserva = get_object_or_404(Reserva, id=reserva_id)
+    
+    if request.method == 'POST':
+        reserva.delete()
+        messages.success(request, 'Reserva eliminada exitosamente.')
+        return redirect('admin_reservas')
+    
+    context = {'reserva': reserva}
+    return render(request, 'admin/admin_eliminar_reserva.html', context)
+
+
+def login_view(request):
+    """
+    Vista de login personalizada para el panel de administración
+    """
+    if request.user.is_authenticated:
+        return redirect('panel_admin')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            next_url = request.GET.get('next', 'panel_admin')
+            return redirect(next_url)
+        else:
+            messages.error(request, 'Usuario o contraseña incorrectos.')
+    
+    return render(request, 'salas/login.html')
+
+def logout_view(request):
+    """
+    Vista de logout personalizada para el panel de administración
+    """
+    logout(request)
+    messages.success(request, 'Has cerrado sesión exitosamente.')
+    return redirect('lista_salas')

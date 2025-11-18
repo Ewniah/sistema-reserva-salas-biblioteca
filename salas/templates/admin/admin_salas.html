@@ -1,0 +1,49 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Gestión de Salas{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Gestión de Salas</h2>
+    <a href="{% url 'admin_crear_sala' %}" class="btn btn-success">➕ Crear Nueva Sala</a>
+    <a href="{% url 'panel_admin' %}" class="btn btn-secondary">← Volver al Panel</a>
+</div>
+
+{% if salas %}
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Capacidad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sala in salas %}
+                    <tr>
+                        <td>{{ sala.nombre }}</td>
+                        <td>{{ sala.capacidad }} personas</td>
+                        <td>
+                            {% if sala.habilitada %}
+                                <span class="badge badge-success">Habilitada</span>
+                            {% else %}
+                                <span class="badge badge-danger">Deshabilitada</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin_editar_sala' sala.id %}" class="btn" style="padding: 5px 10px;">✏️ Editar</a>
+                            <a href="{% url 'admin_eliminar_sala' sala.id %}" class="btn btn-secondary" style="padding: 5px 10px; background-color: #dc3545;">🗑️ Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="card">
+        <p>No hay salas registradas.</p>
+    </div>
+{% endif %}
+{% endblock %}

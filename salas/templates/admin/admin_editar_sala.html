@@ -1,0 +1,40 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Editar Sala{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Editar Sala: {{ sala.nombre }}</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="nombre">Nombre de la Sala *</label>
+            <input type="text" name="nombre" id="nombre" class="form-control" value="{{ sala.nombre }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="capacidad">Capacidad (personas) *</label>
+            <input type="number" name="capacidad" id="capacidad" class="form-control" value="{{ sala.capacidad }}" min="1" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <textarea name="descripcion" id="descripcion" class="form-control" rows="3">{{ sala.descripcion }}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="habilitada" {% if sala.habilitada %}checked{% endif %}>
+                Sala habilitada
+            </label>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+            <a href="{% url 'admin_salas' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

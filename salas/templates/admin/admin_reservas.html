@@ -1,0 +1,54 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Gestión de Reservas{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Gestión de Reservas</h2>
+    <a href="{% url 'panel_admin' %}" class="btn btn-secondary">← Volver al Panel</a>
+</div>
+
+{% if reservas %}
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sala</th>
+                    <th>Reservante</th>
+                    <th>RUT</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas %}
+                    <tr>
+                        <td>{{ reserva.sala.nombre }}</td>
+                        <td>{{ reserva.nombre_reservante }}</td>
+                        <td>{{ reserva.rut }}</td>
+                        <td>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</td>
+                        <td>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% now "U" as current_time %}
+                            {% if reserva.fecha_hora_fin|date:"U" >= current_time %}
+                                <span class="badge badge-success">Activa</span>
+                            {% else %}
+                                <span class="badge badge-secondary">Finalizada</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin_eliminar_reserva' reserva.id %}" class="btn" style="padding: 5px 10px; background-color: #dc3545;">🗑️ Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="card">
+        <p>No hay reservas registradas.</p>
+    </div>
+{% endif %}
+{% endblock %}

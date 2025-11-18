@@ -1,0 +1,24 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Eliminar Reserva{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>⚠️ Confirmar Eliminación de Reserva</h2>
+    <p>¿Está seguro de que desea eliminar esta reserva?</p>
+    
+    <ul>
+        <li><strong>Sala:</strong> {{ reserva.sala.nombre }}</li>
+        <li><strong>Reservante:</strong> {{ reserva.nombre_reservante }}</li>
+        <li><strong>RUT:</strong> {{ reserva.rut }}</li>
+        <li><strong>Inicio:</strong> {{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</li>
+        <li><strong>Fin:</strong> {{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</li>
+    </ul>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background-color: #dc3545;">Sí, Eliminar</button>
+        <a href="{% url 'admin_reservas' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Eliminar Sala{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>⚠️ Confirmar Eliminación</h2>
+    <p>¿Está seguro de que desea eliminar la sala <strong>{{ sala.nombre }}</strong>?</p>
+    <p style="color: #dc3545;"><strong>Esta acción no se puede deshacer y eliminará también todas las reservas asociadas.</strong></p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background-color: #dc3545;">Sí, Eliminar</button>
+        <a href="{% url 'admin_salas' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
