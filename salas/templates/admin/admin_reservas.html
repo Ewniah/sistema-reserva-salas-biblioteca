@@ -39,7 +39,19 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'admin_eliminar_reserva' reserva.id %}" class="btn" style="padding: 5px 10px; background-color: #dc3545;">🗑️ Eliminar</a>
+                            {% now "U" as current_time %}
+                            {% if reserva.fecha_hora_fin|date:"U" >= current_time %}
+                                <a href="{% url 'admin_finalizar_reserva' reserva.id %}" 
+                                   class="btn" 
+                                   style="padding: 5px 10px; background-color: #ffc107;">
+                                   ⏰ Finalizar
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'admin_eliminar_reserva' reserva.id %}" 
+                               class="btn" 
+                               style="padding: 5px 10px; background-color: #dc3545;">
+                               🗑️ Eliminar
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

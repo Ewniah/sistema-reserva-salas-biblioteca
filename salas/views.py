@@ -242,6 +242,25 @@ def admin_eliminar_reserva(request, reserva_id):
     context = {'reserva': reserva}
     return render(request, 'admin/admin_eliminar_reserva.html', context)
 
+@login_required
+@user_passes_test(es_administrador)
+def admin_finalizar_reserva(request, reserva_id):
+    """
+    Finalizar una reserva anticipadamente desde el panel personalizado
+    """
+    reserva = get_object_or_404(Reserva, id=reserva_id)
+    
+    if request.method == 'POST':
+        # Establecer la fecha de fin como ahora
+        reserva.fecha_hora_fin = timezone.now()
+        reserva.save()
+        messages.success(request, f'Reserva de {reserva.nombre_reservante} finalizada exitosamente. La sala {reserva.sala.nombre} ya está disponible.')
+        return redirect('admin_reservas')
+    
+    context = {'reserva': reserva}
+    return render(request, 'admin/admin_finalizar_reserva.html', context)
+
+
 
 def login_view(request):
     """

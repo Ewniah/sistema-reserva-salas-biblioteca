@@ -20,4 +20,5 @@ urlpatterns = [
     path('panel-admin/salas/<int:sala_id>/eliminar/', views.admin_eliminar_sala, name='admin_eliminar_sala'),
     path('panel-admin/reservas/', views.admin_reservas, name='admin_reservas'),
     path('panel-admin/reservas/<int:reserva_id>/eliminar/', views.admin_eliminar_reserva, name='admin_eliminar_reserva'),
+    path('panel-admin/reservas/<int:reserva_id>/finalizar/', views.admin_finalizar_reserva, name='admin_finalizar_reserva'),
 ]

@@ -36,6 +36,7 @@
                     <th>Inicio</th>
                     <th>Fin</th>
                     <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,6 +53,16 @@
                                 <span class="badge badge-success">Activa</span>
                             {% else %}
                                 <span class="badge badge-secondary">Finalizada</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% now "U" as current_time %}
+                            {% if reserva.fecha_hora_fin|date:"U" >= current_time %}
+                                <a href="{% url 'admin_finalizar_reserva' reserva.id %}" 
+                                   class="btn" 
+                                   style="padding: 5px 10px; background-color: #ffc107; font-size: 12px;">
+                                   Finalizar
+                                </a>
                             {% endif %}
                         </td>
                     </tr>
