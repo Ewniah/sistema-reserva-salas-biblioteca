@@ -1,0 +1,26 @@
+# Entorno virtual y dependencias
+venv/
+env/
+
+# Variables de entorno y archivos de configuración sensibles
+.env
+
+# Base de datos local SQLite
+*.sqlite3
+db.sqlite3
+
+# Archivos de Python compilados
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Django media y archivos estáticos
+*.log
+local_settings.py
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.swo
