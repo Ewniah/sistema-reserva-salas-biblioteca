@@ -15,7 +15,7 @@ import os # Se importa el módulo os para manejar rutas de archivos y variables 
 import environ # Se importa django-environ para manejar variables de entorno y secretos de forma segura
 
 # Directorio base del proyecto
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env() # Inicializa django-environ
 environ.Env.read_env(os.path.join(BASE_DIR, '.env')) # Carga las variables de entorno desde el archivo .env
@@ -121,7 +121,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'static/' # URL para acceder a los archivos estáticos
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Directorio donde se recopilan los archivos estáticos para producción
+STATICFILES_DIRS = [] # Directorios adicionales para buscar archivos estáticos
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

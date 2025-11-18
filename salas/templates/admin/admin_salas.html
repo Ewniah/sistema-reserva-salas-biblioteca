@@ -4,46 +4,69 @@
 
 {% block content %}
 <div class="card">
-    <h2>Gestión de Salas</h2>
-    <a href="{% url 'admin_crear_sala' %}" class="btn btn-success">➕ Crear Nueva Sala</a>
-    <a href="{% url 'panel_admin' %}" class="btn btn-secondary">← Volver al Panel</a>
+    <div class="flex-between">
+        <h2>🏢 Gestión de Salas</h2>
+        <div class="flex gap-2">
+            <a href="{% url 'admin_crear_sala' %}" class="btn btn-success">➕ Crear Nueva Sala</a>
+            <a href="{% url 'panel_admin' %}" class="btn btn-secondary">← Volver al Panel</a>
+        </div>
+    </div>
 </div>
 
 {% if salas %}
     <div class="card">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Capacidad</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for sala in salas %}
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ sala.nombre }}</td>
-                        <td>{{ sala.capacidad }} personas</td>
-                        <td>
-                            {% if sala.habilitada %}
-                                <span class="badge badge-success">Habilitada</span>
-                            {% else %}
-                                <span class="badge badge-danger">Deshabilitada</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{% url 'admin_editar_sala' sala.id %}" class="btn" style="padding: 5px 10px;">✏️ Editar</a>
-                            <a href="{% url 'admin_eliminar_sala' sala.id %}" class="btn btn-secondary" style="padding: 5px 10px; background-color: #dc3545;">🗑️ Eliminar</a>
-                        </td>
+                        <th>Nombre</th>
+                        <th>Capacidad</th>
+                        <th>Descripción</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for sala in salas %}
+                        <tr>
+                            <td><strong>{{ sala.nombre }}</strong></td>
+                            <td>👥 {{ sala.capacidad }} personas</td>
+                            <td style="max-width: 300px;">
+                                {% if sala.descripcion %}
+                                    {{ sala.descripcion|truncatewords:10 }}
+                                {% else %}
+                                    <span style="color: var(--gray-light);">Sin descripción</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if sala.habilitada %}
+                                    <span class="badge badge-success">✓ Habilitada</span>
+                                {% else %}
+                                    <span class="badge badge-danger">✕ Deshabilitada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="flex gap-1">
+                                    <a href="{% url 'admin_editar_sala' sala.id %}" class="btn btn-sm" style="background: var(--primary);">
+                                        ✏️ Editar
+                                    </a>
+                                    <a href="{% url 'admin_eliminar_sala' sala.id %}" class="btn btn-danger btn-sm">
+                                        🗑️ Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% else %}
-    <div class="card">
-        <p>No hay salas registradas.</p>
+    <div class="card text-center">
+        <p style="font-size: 3rem; margin-bottom: 1rem;">📭</p>
+        <h3>No hay salas registradas</h3>
+        <p style="color: var(--gray); margin-bottom: 1.5rem;">Comience creando su primera sala.</p>
+        <a href="{% url 'admin_crear_sala' %}" class="btn btn-success">➕ Crear Primera Sala</a>
     </div>
 {% endif %}
 {% endblock %}

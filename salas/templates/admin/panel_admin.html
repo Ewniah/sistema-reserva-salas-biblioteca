@@ -4,73 +4,104 @@
 
 {% block content %}
 <div class="card">
-    <h2>Panel de Administración</h2>
-    <p>Bienvenido <strong>{{ user.username }}</strong> al panel de administración del sistema de reserva de salas.</p>
+    <h2>⚙️ Panel de Administración</h2>
+    <p>Bienvenido <strong>{{ user.username }}</strong> al panel de administración del sistema.</p>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
-    <div class="card" style="background-color: #e3f2fd;">
-        <h3>📚 Salas Totales</h3>
-        <p style="font-size: 36px; font-weight: bold; margin: 10px 0;">{{ total_salas }}</p>
-        <p>Habilitadas: {{ salas_habilitadas }} | Deshabilitadas: {{ salas_deshabilitadas }}</p>
-        <a href="{% url 'admin_salas' %}" class="btn btn-secondary">Gestionar Salas</a>
+<div class="grid grid-3 mb-4">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">
+            📚
+        </div>
+        <div class="stat-value">{{ total_salas }}</div>
+        <div class="stat-label">Salas Totales</div>
+        <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray);">
+            ✓ {{ salas_habilitadas }} Habilitadas · ✕ {{ salas_deshabilitadas }} Deshabilitadas
+        </div>
+        <a href="{% url 'admin_salas' %}" class="btn btn-secondary btn-sm mt-3" style="width: 100%;">Gestionar Salas</a>
     </div>
     
-    <div class="card" style="background-color: #fff3e0;">
-        <h3>📅 Reservas Totales</h3>
-        <p style="font-size: 36px; font-weight: bold; margin: 10px 0;">{{ total_reservas }}</p>
-        <p>Activas: {{ reservas_activas }} | Finalizadas: {{ reservas_finalizadas }}</p>
-        <a href="{% url 'admin_reservas' %}" class="btn btn-secondary">Ver Reservas</a>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">
+            ✓
+        </div>
+        <div class="stat-value">{{ reservas_activas }}</div>
+        <div class="stat-label">Reservas Activas</div>
+        <a href="{% url 'admin_reservas' %}" class="btn btn-secondary btn-sm mt-3" style="width: 100%;">Ver Reservas</a>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">
+            📊
+        </div>
+        <div class="stat-value">{{ total_reservas }}</div>
+        <div class="stat-label">Total Reservas</div>
+        <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray);">
+            ✓ {{ reservas_finalizadas }} Finalizadas · ✕ {{ reservas_canceladas }} Canceladas
+        </div>
     </div>
 </div>
 
 <div class="card">
-    <h3>Últimas Reservas</h3>
+    <h3>📋 Últimas Reservas (Todas)</h3>
     {% if ultimas_reservas %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Sala</th>
-                    <th>Reservante</th>
-                    <th>RUT</th>
-                    <th>Inicio</th>
-                    <th>Fin</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reserva in ultimas_reservas %}
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ reserva.sala.nombre }}</td>
-                        <td>{{ reserva.nombre_reservante }}</td>
-                        <td>{{ reserva.rut }}</td>
-                        <td>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</td>
-                        <td>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            {% now "U" as current_time %}
-                            {% if reserva.fecha_hora_fin|date:"U" >= current_time %}
-                                <span class="badge badge-success">Activa</span>
-                            {% else %}
-                                <span class="badge badge-secondary">Finalizada</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% now "U" as current_time %}
-                            {% if reserva.fecha_hora_fin|date:"U" >= current_time %}
-                                <a href="{% url 'admin_finalizar_reserva' reserva.id %}" 
-                                   class="btn" 
-                                   style="padding: 5px 10px; background-color: #ffc107; font-size: 12px;">
-                                   Finalizar
-                                </a>
-                            {% endif %}
-                        </td>
+                        <th>Sala</th>
+                        <th>Reservante</th>
+                        <th>RUT</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for reserva in ultimas_reservas %}
+                        <tr>
+                            <td><strong>{{ reserva.sala.nombre }}</strong></td>
+                            <td>{{ reserva.nombre_reservante }}</td>
+                            <td>{{ reserva.rut }}</td>
+                            <td>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</td>
+                            <td>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% if reserva.estado == 'activa' %}
+                                    {% now "U" as current_time %}
+                                    {% if reserva.fecha_hora_fin|date:"U" >= current_time %}
+                                        <span class="badge badge-success">✓ Activa</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">✓ Finalizada</span>
+                                    {% endif %}
+                                {% elif reserva.estado == 'cancelada' %}
+                                    <span class="badge badge-danger">✕ Cancelada</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">{{ reserva.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if reserva.estado == 'activa' %}
+                                    {% now "U" as current_time %}
+                                    {% if reserva.fecha_hora_fin|date:"U" >= current_time %}
+                                        <a href="{% url 'admin_finalizar_reserva' reserva.id %}" class="btn btn-warning btn-sm">
+                                            ⏰ Finalizar
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <span style="color: var(--gray-light); font-size: 0.875rem;">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <p>No hay reservas registradas.</p>
+        <div class="text-center" style="padding: 2rem;">
+            <p style="font-size: 3rem; margin-bottom: 1rem;">📭</p>
+            <p style="color: var(--gray);">No hay reservas registradas.</p>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

@@ -4,9 +4,17 @@
 
 {% block content %}
 <div class="card">
-    <h2>Reservar: {{ sala.nombre }}</h2>
-    <p><strong>Capacidad:</strong> {{ sala.capacidad }} personas</p>
-    <p><strong>Duración de la reserva:</strong> 2 horas automáticamente</p>
+    <h2>📝 Reservar: {{ sala.nombre }}</h2>
+    <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #3b82f6;">
+        <p style="margin: 0; color: #1e40af; font-weight: 500;">
+            ℹ️ <strong>Información importante:</strong>
+        </p>
+        <ul style="margin: 0.5rem 0 0 1.5rem; color: #1e40af;">
+            <li><strong>Capacidad:</strong> {{ sala.capacidad }} personas</li>
+            <li><strong>Duración:</strong> 2 horas automáticamente</li>
+            <li><strong>Restricción:</strong> Solo una reserva activa por RUT</li>
+        </ul>
+    </div>
     
     <form method="post">
         {% csrf_token %}
@@ -16,6 +24,10 @@
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field }}
                 
+                {% if field.help_text %}
+                    <small class="form-help">{{ field.help_text }}</small>
+                {% endif %}
+                
                 {% if field.errors %}
                     <ul class="errorlist">
                         {% for error in field.errors %}
@@ -23,28 +35,13 @@
                         {% endfor %}
                     </ul>
                 {% endif %}
-                
-                {% if field.help_text %}
-                    <small style="display: block; color: #666; margin-top: 5px;">
-                        {{ field.help_text }}
-                    </small>
-                {% endif %}
             </div>
         {% endfor %}
         
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn btn-success">Confirmar Reserva</button>
+        <div class="flex gap-2 mt-4">
+            <button type="submit" class="btn btn-success btn-lg">✓ Confirmar Reserva</button>
             <a href="{% url 'detalle_sala' sala.id %}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
-</div>
-
-<div class="card">
-    <h4>Importante:</h4>
-    <ul>
-        <li>La reserva tendrá una duración de 2 horas desde el momento actual.</li>
-        <li>Solo puede tener una reserva activa a la vez.</li>
-        <li>El RUT debe ser válido (se valida con módulo 11).</li>
-    </ul>
 </div>
 {% endblock %}

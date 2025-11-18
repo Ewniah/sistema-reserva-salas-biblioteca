@@ -1,0 +1,62 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Cancelar Reserva{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 700px; margin: 3rem auto;">
+    <div class="text-center mb-4">
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 40px;">
+            ⚠️
+        </div>
+        <h2>Cancelar Reserva</h2>
+        <p style="color: var(--gray);">¿Está seguro de que desea cancelar su reserva?</p>
+    </div>
+    
+    <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+        <h4 style="margin-bottom: 1rem; color: var(--dark);">📄 Detalles de su Reserva:</h4>
+        <div style="display: grid; gap: 0.75rem;">
+            <div class="flex-between" style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <span style="color: var(--gray); font-weight: 500;">🏢 Sala:</span>
+                <strong>{{ reserva.sala.nombre }}</strong>
+            </div>
+            <div class="flex-between" style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <span style="color: var(--gray); font-weight: 500;">👤 Reservante:</span>
+                <strong>{{ reserva.nombre_reservante }}</strong>
+            </div>
+            <div class="flex-between" style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <span style="color: var(--gray); font-weight: 500;">🆔 RUT:</span>
+                <strong>{{ reserva.rut }}</strong>
+            </div>
+            <div class="flex-between" style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <span style="color: var(--gray); font-weight: 500;">📅 Inicio:</span>
+                <strong>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</strong>
+            </div>
+            <div class="flex-between" style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <span style="color: var(--gray); font-weight: 500;">⏱️ Fin:</span>
+                <strong>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</strong>
+            </div>
+        </div>
+    </div>
+    
+    <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #3b82f6;">
+        <h4 style="margin-bottom: 0.75rem; color: #1e40af;">ℹ️ Información:</h4>
+        <ul style="margin: 0.5rem 0 0 1.5rem; color: #1e40af; font-size: 0.9375rem;">
+            <li>Al cancelar, la sala quedará disponible para otros usuarios</li>
+            <li>Podrá hacer una nueva reserva inmediatamente</li>
+            <li>Esta acción no se puede deshacer</li>
+        </ul>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="flex gap-2">
+            <button type="submit" class="btn btn-danger btn-lg" style="flex: 1;">
+                ✕ Sí, Cancelar Reserva
+            </button>
+            <a href="/mis-reservas/?rut={{ reserva.rut }}" class="btn btn-secondary btn-lg">
+                Volver
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

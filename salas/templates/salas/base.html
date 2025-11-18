@@ -1,218 +1,41 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sistema de Reserva de Salas{% endblock %}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f4f4f4;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background-color: #333;
-            color: white;
-            padding: 20px 0;
-            margin-bottom: 30px;
-        }
-        
-        header h1 {
-            text-align: center;
-        }
-        
-        nav {
-            background-color: #444;
-            padding: 10px 0;
-            margin-bottom: 20px;
-        }
-        
-        nav ul {
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            display: block;
-        }
-        
-        nav a:hover {
-            background-color: #555;
-        }
-        
-        .messages {
-            margin-bottom: 20px;
-        }
-        
-        .alert {
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        
-        .btn-success {
-            background-color: #28a745;
-        }
-        
-        .btn-success:hover {
-            background-color: #218838;
-        }
-        
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .errorlist {
-            list-style: none;
-            color: #721c24;
-            background-color: #f8d7da;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 5px;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-        
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: #333;
-            color: white;
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .badge-success {
-            background-color: #28a745;
-            color: white;
-        }
-        
-        .badge-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #333;
-            color: white;
-            margin-top: 40px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'salas/css/styles.css' %}">
 </head>
 <body>
     <header>
-        <div class="container">
-            <h1>Sistema de Reserva de Salas de Estudio</h1>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📚</div>
+                <h1>Sistema de Reserva de Salas</h1>
+            </div>
+            {% if user.is_authenticated %}
+                <div class="header-user">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>{{ user.username }}</span>
+                </div>
+            {% endif %}
         </div>
     </header>
     
     <nav>
         <ul>
-            <li><a href="{% url 'lista_salas' %}">Salas Disponibles</a></li>
-            <li><a href="{% url 'mis_reservas' %}">Mis Reservas</a></li>
+            <li><a href="{% url 'lista_salas' %}">🏠 Salas Disponibles</a></li>
+            <li><a href="{% url 'mis_reservas' %}">📋 Mis Reservas</a></li>
             {% if user.is_authenticated and user.is_staff %}
-                <li><a href="{% url 'panel_admin' %}">Panel Administración</a></li>
-                <li><a href="{% url 'logout' %}">Cerrar Sesión ({{ user.username }})</a>/<li>
-            {% else %}
-                <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
+                <li><a href="{% url 'panel_admin' %}">⚙️ Panel Admin</a></li>
             {% endif %}
-            <li><a href="/admin/">Administración Django</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">🚪 Cerrar Sesión</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">🔐 Iniciar Sesión</a></li>
+            {% endif %}
+            <li><a href="/admin/">🔧 Admin Django</a></li>
         </ul>
     </nav>
     
@@ -232,7 +55,7 @@
     </div>
     
     <footer>
-        <p>&copy; 2025 Sistema de Reserva de Salas - Biblioteca</p>
+        <p>&copy; 2025 Sistema de Reserva de Salas - Biblioteca | Desarrollado con Django</p>
     </footer>
 </body>
 </html>

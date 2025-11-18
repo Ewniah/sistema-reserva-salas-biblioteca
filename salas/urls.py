@@ -7,6 +7,7 @@ urlpatterns = [
     path('sala/<int:sala_id>/', views.detalle_sala, name='detalle_sala'),
     path('sala/<int:sala_id>/reservar/', views.crear_reserva, name='crear_reserva'),
     path('mis-reservas/', views.mis_reservas, name='mis_reservas'),
+    path('cancelar-reserva/<int:reserva_id>/', views.cancelar_reserva, name='cancelar_reserva'),
 
     # URLs de autenticación
     path('login/', views.login_view, name='login'),

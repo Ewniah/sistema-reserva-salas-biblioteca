@@ -4,50 +4,79 @@
 
 {% block content %}
 <div class="card">
-    <h2>Consultar Mis Reservas</h2>
-    <p>Ingrese su RUT para ver sus reservas activas.</p>
+    <h2>🔍 Consultar Mis Reservas</h2>
+    <p style="color: var(--gray);">Ingrese su RUT para ver sus reservas.</p>
     
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="rut">RUT (con guión)</label>
-            <input type="text" 
-                   name="rut" 
-                   id="rut" 
-                   class="form-control" 
-                   placeholder="Ej: 12345678-9"
-                   value="{{ rut_buscado|default:'' }}"
-                   required>
+    <form method="get" style="margin-top: 1.5rem;">
+        <div class="flex gap-2">
+            <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                <input type="text" 
+                       name="rut" 
+                       class="form-control" 
+                       placeholder="Ej: 12345678-9 o 12345678-K" 
+                       value="{{ rut_consultado }}"
+                       required>
+            </div>
+            <button type="submit" class="btn btn-primary">Buscar</button>
         </div>
-        <button type="submit" class="btn">Buscar Reservas</button>
     </form>
 </div>
 
 {% if reservas %}
     <div class="card">
-        <h3>Reservas Activas</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Sala</th>
-                    <th>Fecha y Hora Inicio</th>
-                    <th>Fecha y Hora Fin</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reserva in reservas %}
+        <h3>📋 Reservas de RUT: {{ rut_consultado }}</h3>
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ reserva.sala.nombre }}</td>
-                        <td>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</td>
-                        <td>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            <span class="badge badge-success">Activa</span>
-                        </td>
+                        <th>Sala</th>
+                        <th>Reservante</th>
+                        <th>Fecha y Hora Inicio</th>
+                        <th>Fecha y Hora Fin</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for reserva in reservas %}
+                        <tr>
+                            <td><strong>{{ reserva.sala.nombre }}</strong></td>
+                            <td>{{ reserva.nombre_reservante }}</td>
+                            <td>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</td>
+                            <td>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% now "U" as current_time %}
+                                {% if reserva.fecha_hora_fin|date:"U" >= current_time %}
+                                    <span class="badge badge-success">✓ Activa</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">✓ Finalizada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% now "U" as current_time %}
+                                {% if reserva.fecha_hora_fin|date:"U" >= current_time %}
+                                    <a href="{% url 'cancelar_reserva' reserva.id %}" 
+                                       class="btn btn-danger btn-sm">
+                                        ✕ Cancelar
+                                    </a>
+                                {% else %}
+                                    <span style="color: var(--gray-light); font-size: 0.875rem;">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% elif rut_consultado %}
+    <div class="card text-center">
+        <p style="font-size: 3rem; margin-bottom: 1rem;">📭</p>
+        <h3>No se encontraron reservas</h3>
+        <p style="color: var(--gray);">No hay reservas con el RUT: <strong>{{ rut_consultado }}</strong></p>
+        <p style="color: var(--gray); font-size: 0.875rem; margin-top: 1rem;">
+            Verifique que el RUT esté escrito correctamente (formato: 12345678-9)
+        </p>
     </div>
 {% endif %}
 {% endblock %}

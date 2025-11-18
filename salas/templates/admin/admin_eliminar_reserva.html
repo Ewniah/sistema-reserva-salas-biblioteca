@@ -3,22 +3,52 @@
 {% block title %}Eliminar Reserva{% endblock %}
 
 {% block content %}
-<div class="card">
-    <h2>⚠️ Confirmar Eliminación de Reserva</h2>
-    <p>¿Está seguro de que desea eliminar esta reserva?</p>
+<div class="card" style="max-width: 700px; margin: 3rem auto;">
+    <div class="text-center mb-4">
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 40px;">
+            ⚠️
+        </div>
+        <h2>Eliminar Reserva</h2>
+        <p style="color: var(--gray);">¿Está seguro de que desea eliminar esta reserva?</p>
+    </div>
     
-    <ul>
-        <li><strong>Sala:</strong> {{ reserva.sala.nombre }}</li>
-        <li><strong>Reservante:</strong> {{ reserva.nombre_reservante }}</li>
-        <li><strong>RUT:</strong> {{ reserva.rut }}</li>
-        <li><strong>Inicio:</strong> {{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</li>
-        <li><strong>Fin:</strong> {{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</li>
-    </ul>
+    <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+        <h4 style="margin-bottom: 1rem; color: var(--dark);">📄 Detalles de la Reserva:</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem;">
+            <li style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <strong>🏢 Sala:</strong> {{ reserva.sala.nombre }}
+            </li>
+            <li style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <strong>👤 Reservante:</strong> {{ reserva.nombre_reservante }}
+            </li>
+            <li style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <strong>🆔 RUT:</strong> {{ reserva.rut }}
+            </li>
+            <li style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <strong>📅 Inicio:</strong> {{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}
+            </li>
+            <li style="padding: 0.75rem; background: white; border-radius: 8px;">
+                <strong>⏱️ Fin:</strong> {{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}
+            </li>
+        </ul>
+    </div>
+    
+    <div style="background: #fee2e2; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid var(--danger);">
+        <p style="margin: 0; color: #991b1b; font-weight: 600;">
+            ⚠️ Esta acción no se puede deshacer
+        </p>
+    </div>
     
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn" style="background-color: #dc3545;">Sí, Eliminar</button>
-        <a href="{% url 'admin_reservas' %}" class="btn btn-secondary">Cancelar</a>
+        <div class="flex gap-2">
+            <button type="submit" class="btn btn-danger btn-lg" style="flex: 1;">
+                🗑️ Sí, Eliminar Reserva
+            </button>
+            <a href="{% url 'admin_reservas' %}" class="btn btn-secondary btn-lg">
+                Cancelar
+            </a>
+        </div>
     </form>
 </div>
 {% endblock %}

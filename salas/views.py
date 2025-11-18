@@ -109,17 +109,17 @@ def panel_admin(request):
     """
     Panel de administración personalizado
     """
-    # Estadísticas generales
     total_salas = Sala.objects.count()
     salas_habilitadas = Sala.objects.filter(habilitada=True).count()
     salas_deshabilitadas = total_salas - salas_habilitadas
     
     ahora = timezone.now()
     total_reservas = Reserva.objects.count()
-    reservas_activas = Reserva.objects.filter(fecha_hora_fin__gte=ahora).count()
-    reservas_finalizadas = total_reservas - reservas_activas
+    reservas_activas = Reserva.objects.filter(fecha_hora_fin__gte=ahora, estado='activa').count()
+    reservas_canceladas = Reserva.objects.filter(estado='cancelada').count()
+    reservas_finalizadas = total_reservas - reservas_activas - reservas_canceladas
     
-    # Últimas reservas
+    # Mostrar TODAS las reservas (activas, finalizadas y canceladas)
     ultimas_reservas = Reserva.objects.all().order_by('-fecha_creacion')[:10]
     
     context = {
@@ -129,9 +129,11 @@ def panel_admin(request):
         'total_reservas': total_reservas,
         'reservas_activas': reservas_activas,
         'reservas_finalizadas': reservas_finalizadas,
+        'reservas_canceladas': reservas_canceladas,
         'ultimas_reservas': ultimas_reservas,
     }
     return render(request, 'admin/panel_admin.html', context)
+
 
 @login_required
 @user_passes_test(es_administrador)
@@ -246,19 +248,27 @@ def admin_eliminar_reserva(request, reserva_id):
 @user_passes_test(es_administrador)
 def admin_finalizar_reserva(request, reserva_id):
     """
-    Finalizar una reserva anticipadamente desde el panel personalizado
+    Finalizar una reserva anticipadamente
     """
     reserva = get_object_or_404(Reserva, id=reserva_id)
     
     if request.method == 'POST':
-        # Establecer la fecha de fin como ahora
+        # Finalizar la reserva
         reserva.fecha_hora_fin = timezone.now()
-        reserva.save()
-        messages.success(request, f'Reserva de {reserva.nombre_reservante} finalizada exitosamente. La sala {reserva.sala.nombre} ya está disponible.')
+        
+        # Si tiene campo estado, marcarlo como finalizada
+        if hasattr(reserva, 'estado'):
+            reserva.estado = 'finalizada'
+            reserva.save(update_fields=['fecha_hora_fin', 'estado'])
+        else:
+            reserva.save(update_fields=['fecha_hora_fin'])
+        
+        messages.success(request, f'Reserva de {reserva.nombre_reservante} finalizada exitosamente.')
         return redirect('admin_reservas')
     
     context = {'reserva': reserva}
     return render(request, 'admin/admin_finalizar_reserva.html', context)
+
 
 
 
@@ -290,3 +300,66 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'Has cerrado sesión exitosamente.')
     return redirect('lista_salas')
+
+def mis_reservas(request):
+    """
+    Vista para consultar reservas mediante RUT
+    """
+    rut_input = request.GET.get('rut', '').strip()
+    reservas = []
+    rut_consultado = ''
+    
+    if rut_input:
+        # Normalizar el RUT (quitar puntos y espacios, convertir a mayúsculas)
+        rut_normalizado = rut_input.upper().replace(".", "").replace(" ", "")
+        
+        # Si no tiene guión, agregarlo antes del último dígito
+        if '-' not in rut_normalizado and len(rut_normalizado) > 1:
+            rut_normalizado = rut_normalizado[:-1] + '-' + rut_normalizado[-1]
+        
+        rut_consultado = rut_normalizado
+        
+        # Mostrar todas las reservas (activas y finalizadas)
+        reservas = Reserva.objects.filter(
+            rut=rut_normalizado
+        ).select_related('sala').order_by('-fecha_hora_inicio')
+    
+    context = {
+        'reservas': reservas,
+        'rut_consultado': rut_consultado,
+    }
+    return render(request, 'salas/mis_reservas.html', context)
+
+
+def cancelar_reserva(request, reserva_id):
+    """
+    Vista para que los usuarios cancelen sus propias reservas
+    """
+    reserva = get_object_or_404(Reserva, id=reserva_id)
+    
+    # Verificar que no haya finalizado por tiempo
+    ahora = timezone.now()
+    if reserva.fecha_hora_fin < ahora:
+        messages.error(request, 'No se puede cancelar una reserva que ya finalizó.')
+        return redirect('mis_reservas')
+    
+    # Verificar que no esté ya cancelada
+    if hasattr(reserva, 'estado') and reserva.estado == 'cancelada':
+        messages.error(request, 'Esta reserva ya fue cancelada anteriormente.')
+        return redirect('mis_reservas')
+    
+    if request.method == 'POST':
+        nombre_sala = reserva.sala.nombre
+        rut = reserva.rut
+        
+        # Cambiar estado sin validaciones
+        reserva.estado = 'cancelada'
+        reserva.save(update_fields=['estado'])  # <--- CAMBIO IMPORTANTE: usar update_fields
+        
+        messages.success(request, f'Reserva de la sala "{nombre_sala}" cancelada exitosamente.')
+        return redirect(f'/mis-reservas/?rut={rut}')
+    
+    context = {
+        'reserva': reserva,
+    }
+    return render(request, 'salas/cancelar_reserva.html', context)

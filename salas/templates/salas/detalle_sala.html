@@ -4,26 +4,28 @@
 
 {% block content %}
 <div class="card">
-    <h2>{{ sala.nombre }}</h2>
-    
-    <p><strong>Capacidad:</strong> {{ sala.capacidad }} personas</p>
+    <div class="flex-between mb-3">
+        <div>
+            <h2>{{ sala.nombre }}</h2>
+            <p style="color: var(--gray); margin-top: 0.5rem;">
+                👥 Capacidad: {{ sala.capacidad }} personas
+            </p>
+        </div>
+        {% if disponible %}
+            <span class="badge badge-success" style="font-size: 1rem; padding: 0.75rem 1.5rem;">✓ Disponible</span>
+        {% else %}
+            <span class="badge badge-danger" style="font-size: 1rem; padding: 0.75rem 1.5rem;">✕ Ocupada</span>
+        {% endif %}
+    </div>
     
     {% if sala.descripcion %}
-        <p><strong>Descripción:</strong> {{ sala.descripcion }}</p>
+        <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px; margin-bottom: 1.5rem;">
+            <p style="margin: 0; color: var(--gray);">📝 {{ sala.descripcion }}</p>
+        </div>
     {% endif %}
     
-    <p>
-        <strong>Estado actual:</strong>
-        {% if disponible %}
-            <span class="badge badge-success">Disponible</span>
-        {% else %}
-            <span class="badge badge-danger">Ocupada</span>
-        {% endif %}
-    </p>
-    
-    <div style="margin-top: 20px;">
-        <a href="{% url 'lista_salas' %}" class="btn btn-secondary">Volver</a>
-        
+    <div class="flex gap-2">
+        <a href="{% url 'lista_salas' %}" class="btn btn-secondary">← Volver</a>
         {% if disponible %}
             <a href="{% url 'crear_reserva' sala.id %}" class="btn btn-success">Reservar esta sala</a>
         {% endif %}
@@ -32,29 +34,33 @@
 
 {% if reservas %}
     <div class="card">
-        <h3>Reservas Activas y Próximas</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Reservante</th>
-                    <th>Inicio</th>
-                    <th>Fin</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reserva in reservas %}
+        <h3>📅 Reservas Activas y Próximas</h3>
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ reserva.nombre_reservante }}</td>
-                        <td>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</td>
-                        <td>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</td>
+                        <th>Reservante</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for reserva in reservas %}
+                        <tr>
+                            <td><strong>{{ reserva.nombre_reservante }}</strong></td>
+                            <td>{{ reserva.fecha_hora_inicio|date:"d/m/Y H:i" }}</td>
+                            <td>{{ reserva.fecha_hora_fin|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% else %}
-    <div class="card">
-        <p>No hay reservas activas para esta sala.</p>
+    <div class="card text-center">
+        <p style="font-size: 3rem; margin-bottom: 1rem;">✨</p>
+        <h3>No hay reservas activas</h3>
+        <p style="color: var(--gray);">Esta sala está completamente disponible.</p>
     </div>
 {% endif %}
 {% endblock %}
