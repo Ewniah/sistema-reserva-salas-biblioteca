@@ -1,13 +1,9 @@
-================================================================================
 SISTEMA DE RESERVA DE SALAS DE BIBLIOTECA
-================================================================================
 
 Sistema completo de gestión y reserva de salas de estudio desarrollado con
 Django y PostgreSQL.
 
-================================================================================
 CARACTERÍSTICAS
-================================================================================
 
 - Gestión de salas (CRUD completo) - Crear, editar, eliminar y listar salas
 - Sistema de reservas - Los usuarios pueden reservar salas disponibles
@@ -19,9 +15,7 @@ CARACTERÍSTICAS
 - Sistema de autenticación - Login/logout para administradores
 - Finalizar reservas anticipadamente - Los admin pueden finalizar reservas
 
-================================================================================
 TECNOLOGÍAS UTILIZADAS
-================================================================================
 
 - Python 3.14
 - Django 5.2
@@ -29,9 +23,7 @@ TECNOLOGÍAS UTILIZADAS
 - django-environ - Manejo de variables de entorno
 - psycopg2-binary - Adaptador de PostgreSQL
 
-================================================================================
 INSTALACIÓN
-================================================================================
 
 ## REQUISITOS PREVIOS
 
@@ -98,9 +90,7 @@ INSTALACIÓN
     - Panel admin personalizado: http://127.0.0.1:8000/panel-admin/
     - Admin Django: http://127.0.0.1:8000/admin/
 
-================================================================================
 EJECUTAR TESTS
-================================================================================
 
 python manage.py test
 
@@ -108,9 +98,7 @@ Resultado esperado:
 Ran 26 tests in X.XXXs
 OK
 
-================================================================================
 ESTRUCTURA DEL PROYECTO
-================================================================================
 
 sistema-reserva-salas-biblioteca/
 ├── config/ # Configuración del proyecto
@@ -136,9 +124,7 @@ sistema-reserva-salas-biblioteca/
 ├── README.md
 └── requirements.txt
 
-================================================================================
 CREDENCIALES DE PRUEBA
-================================================================================
 
 Después de ejecutar "python cargar_datos.py":
 
@@ -155,9 +141,7 @@ RESERVAS DE EJEMPLO:
 - RUT: 11111111-1
 - RUT: 22222222-2
 
-================================================================================
 FUNCIONALIDADES PRINCIPALES
-================================================================================
 
 PARA USUARIOS:
 
@@ -174,9 +158,7 @@ PARA ADMINISTRADORES:
 - Finalizar reservas anticipadamente
 - Habilitar/deshabilitar salas
 
-================================================================================
 VALIDACIONES IMPLEMENTADAS
-================================================================================
 
 ✓ RUT chileno validado con módulo 11
 ✓ Un RUT solo puede tener una reserva activa
@@ -184,5 +166,3 @@ VALIDACIONES IMPLEMENTADAS
 ✓ Duración automática de 2 horas
 ✓ Liberación automática de salas
 ✓ Verificación de disponibilidad en tiempo real
-
-================================================================================
